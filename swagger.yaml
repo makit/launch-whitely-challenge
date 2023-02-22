@@ -1,0 +1,159 @@
+openapi: 3.0.0
+info:
+  title: D55 Launch Whitely
+  version: 1.0.0
+
+paths:  
+  "/feature-flag":
+    post:
+      summary: Create a new Feature Flag
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeatureFlag"
+        required: true
+      responses:
+        "200":
+          description: "The Feature Flag has been created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "400":
+          description: "The given data is invalid"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Failure"
+        "500":
+          description: "An internal server error has occured"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Failure"
+
+  "/feature-flag/{flagName}":
+    parameters:
+      - in: path
+        name: flagName
+        required: true
+        description: Flag Name
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9\-]{3,60}$
+
+    get:
+      summary: Get a feature flag
+      responses:
+        "200":
+          description: "Details of the Feature flag have been returned"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlag"
+        "404":
+          description: "The Feature Flag does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Failure"
+        "500":
+          description: "An internal server error has occured"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Failure"
+
+    delete:
+      summary: Delete a Feature Flag
+      responses:
+        "200":
+          description: "The Feature Flag has been deleted"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "404":
+          description: "The Feature Flag does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Failure"
+        "500":
+          description: "An internal server error has occured"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Failure"
+                
+    put:
+      summary: Update a Feature Flags variation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeatureFlag"
+        required: true
+      responses:
+        "200":
+          description: "The Feature Flag variation has been updated"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "400":
+          description: "The given data is invalid"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Failure"
+        "404":
+          description: "The Feature Flag does not exist"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Failure"
+        "500":
+          description: "An internal server error has occured"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Failure"
+
+components:
+  schemas:
+    FeatureFlag:
+      type: "object"
+      required:
+        - flagName
+        - currentVariation
+      properties:
+        flagName:
+          type: string
+          example: "use-new-feature"
+          pattern: ^[a-zA-Z0-9\-]{3,60}$
+        currentVariation:
+          type: boolean
+
+    Success:
+      type: "object"
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          example: true
+          
+    Failure:
+      type: "object"
+      required:
+        - success
+        - errorDetails
+      properties:
+        success:
+          type: boolean
+          example: false
+        errorDetails:
+          type: string
+          example: It did not work due to the things
